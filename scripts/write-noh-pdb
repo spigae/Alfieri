@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+vmd=/home2/espiga/programs/vmd-1.9.1/bin/./vmd
+#
+if [ -z $1 ]; then
+   echo ""
+   echo "Usage: write-noh-pdb file.pdb"
+   echo ""
+   exit
+fi
+
+cat <<EOF>tmp.conv.tcl.tmp
+mol new     {$1} type {pdb} first 0 last -1 step 1 waitfor all 
+#mol addfile {$2} type {rst7}  first 0 last -1 step 1 waitfor all 
+#set sel [atomselect top all]
+
+set a [atomselect top "noh"]
+\$a set beta 0
+\$a writepdb noh.pdb
+
+
+
+quit
+EOF
+$vmd -dispdev text -e tmp.conv.tcl.tmp
+rm tmp.conv.tcl.tmp
+
+

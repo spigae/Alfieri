@@ -1,0 +1,5 @@
+source /home2/espiga/programs/amber14/dat/leap/cmd/oldff/leaprc.ff99bsc0
+a = loadpdb for-tleap.pdb
+charge a
+saveamberparm a tleap.top tleap.rst
+quit
