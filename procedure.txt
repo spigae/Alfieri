@@ -1,0 +1,240 @@
+#
+# Revised last time: 25.06.2019
+# Version 1.0
+# Authors: spigae (Enrico Spiga)
+#
+
+0. Create file
+   x-ray-to-be-used.pdb
+   0.1 Description of the cut
+   0.2 Renumbering residues of DNA
+   0.3 Adding chain name: A (first DNA strand), B (second DNA strand) and C (for protein)
+
+1. Creating the possible mutations for the 8-mer
+   1.1 Open and check
+       - exe-create-mutation-files.x
+       	 + let count=1 -> first mutation to create
+   	 + let natm=16 -> number of base pairs
+       - create-mutations.f
+       	 + np=4 -> number of possible mutations for base
+       - create-mutation-pairs.f
+       	 + np=8 -> number of base pairs
+   1.2 Run the script
+       - nohup ./exe-create-mutation-files.x >& exe-create-mutation-files.log &
+       	 This script should generate 65536 directories
+
+2. Making the mutations, creating the topologies with Tleap (Amber) and
+   running a short minimization with NAMD
+   2.1 ./calc-center-dimensions x-ray-to-be-used.pdb
+
+   2.2 Open and check
+       - exe-mut-tleap-min.x
+       	 + let count=1 -> number of the first mutation to run with the script
+   	 + let nmut=65536 -> number of the last mutation to run with the script
+	 + pdb=x-ray-to-be-used.pdb -> name of the pdb to be mutated
+       - write-noh-pdb
+       	 + nothing should be changed
+       - mutate_bases
+       	 + to have this tool you need to install 3DNA!
+       - tleap
+       	 + to have this tool you need to install Ambertools
+       - tleap.in
+       	 + nothing should be changed
+       - min.conf (NAMD)
+       	 + you could think to change the number of steps...
+	 + write the results of calc-center-dimensions
+       - catdcd
+       	 + you need to install it!
+   2.2 Run the script
+       - nohup ./exe-mut-tleap-min.x >& exe-mut-tleap-min.log &
+
+3. Archiving directories to simplify the main directories
+   3.1 Open and check
+       - exe-archive-1.x
+       - exe-archive-2.x
+       - exe-archive-3.x
+       - exe-archive-4.x
+       	 + let count=1
+     	 + let last=64	
+     	 + let n=256
+   3.2 Run the script
+       - nohup ./exe-archive-1.x >& exe-archive-1.log &
+       - nohup ./exe-archive-2.x >& exe-archive-2.log &
+       - nohup ./exe-archive-3.x >& exe-archive-3.log &
+       - nohup ./exe-archive-4.x >& exe-archive-4.log &
+
+4. Running MMPBSA
+   4.1 Open and check
+       - exe-run-mmpbsa-1.x
+       - exe-run-mmpbsa-2.x
+       - exe-run-mmpbsa-3.x
+       - exe-run-mmpbsa-4.x
+       	 + let count=1
+       	 + let last=64
+       	 + let n=256
+       	 + cpu=2
+   4.2 Run the script
+       - nohup ./exe-run-mmpbsa-1.x >& exe-run-mmpbsa-1.log &
+       - nohup ./exe-run-mmpbsa-2.x >& exe-run-mmpbsa-2.log &
+       - nohup ./exe-run-mmpbsa-3.x >& exe-run-mmpbsa-3.log &
+       - nohup ./exe-run-mmpbsa-4.x >& exe-run-mmpbsa-4.log &
+
+5. Running MMGBSA
+   5.1 Open and check
+       - exe-run-mmgbsa-1.x
+       - exe-run-mmgbsa-2.x
+       - exe-run-mmgbsa-3.x
+       - exe-run-mmgbsa-4.x
+       	 + let count=1
+	 + let last=64
+	 + let n=256
+	 + cpu=2
+       - MMPBSA.py
+       	 + to have this	tool you need to install Ambertools
+   5.2 Run the script
+       - nohup ./exe-run-mmgbsa-1.x >& exe-run-mmgbsa-1.log &
+       - nohup ./exe-run-mmgbsa-2.x >& exe-run-mmgbsa-2.log &
+       - nohup ./exe-run-mmgbsa-3.x >& exe-run-mmgbsa-3.log &
+       - nohup ./exe-run-mmgbsa-4.x >& exe-run-mmgbsa-4.log &
+
+6. Running DDNA
+   6.1 Open and check
+       - exe-run-ddna-1.x
+       - exe-run-ddna-2.x
+       - exe-run-ddna-3.x
+       - exe-run-ddna-4.x
+       	 + let count=1
+       	 + let last=64
+       	 + let n=256
+       - dfire_DNA179
+       	 + nothing should be changed
+       - aminodna.dat
+       	 + nothing should be changed
+       - write-noh-pdb
+       	 + nothing should be changed
+       ...
+
+   6.2 Run the script
+       - nohup ./exe-run-ddna-1.x >& exe-run-ddna-1.log &
+       - nohup ./exe-run-ddna-2.x >& exe-run-ddna-2.log &
+       - nohup ./exe-run-ddna-3.x >& exe-run-ddna-3.log &
+       - nohup ./exe-run-ddna-4.x >& exe-run-ddna-4.log &
+
+7. Ranking MMPBSA results
+   7.1 Open and check
+       - exe-analysis-mmpbsa.x
+       	 + let count=1
+       	 + let last=256
+       	 + let n=256
+       	 + dir=mmpbsa-results
+       - convert-in-line.f
+       - calculate-statistics-1.py
+       	 + nothing should be changed
+   7.2 Run the script
+       - ./exe-analysis-mmpbsa.x >& exe-analysis-mmpbsa.log &
+   7.3 The results will be in the directory
+       mmpbsa-results
+
+8. Ranking MMGBSA results
+   8.1 Open and check
+       - exe-analysis-mmgbsa.x
+       	 + let count=1
+	 + let last=256
+	 + let n=256
+	 + dir=mmgbsa-results
+       - convert-in-line.f
+       	 + nothing should be changed
+       - calculate-statistics-1.py
+       	 + nothing should be changed
+   8.2 Run the script
+       - ./exe-analysis-mmgbsa.x >& exe-analysis-mmgbsa.log &
+
+9. Ranking DDNA results (first number of DDNA output)
+   9.1 Open and check
+       - exe-analysis-ddna.x
+       	 + let count=1
+       	 + let last=256
+       	 + let n=256
+       	 + dir=ddna-results
+       - convert-in-line.f
+       	 + nothing should be changed
+       - calculate-statistics-2.py
+       	 + nothing should be changed
+   9.2 Run the script
+       - ./exe-analysis-ddna.x >& exe-analysis-ddna.log &
+
+10. Calculating the decomposition per interacting residues MMPBSA
+    10.1 Open and check
+         - exe-run-mmpbsa-decomp-per-pair-1.x
+	 - exe-run-mmpbsa-decomp-per-pair-2.x
+	 - exe-run-mmpbsa-decomp-per-pair-3.x
+	 - exe-run-mmpbsa-decomp-per-pair-4.x
+	   + let count=1
+	   + let last=64
+	   + let n=256
+	   + cpu=2
+    10.2 Run the script
+         - nohup ./exe-run-mmpbsa-decomp-per-pair-1.x >& exe-run-mmpbsa-decomp-per-pair-1.log &
+	 - nohup ./exe-run-mmpbsa-decomp-per-pair-2.x >& exe-run-mmpbsa-decomp-per-pair-2.log &
+	 - nohup ./exe-run-mmpbsa-decomp-per-pair-3.x >& exe-run-mmpbsa-decomp-per-pair-3.log &
+	 - nohup ./exe-run-mmpbsa-decomp-per-pair-4.x >& exe-run-mmpbsa-decomp-per-pair-4.log &
+
+11. Post-processing MMPBSA decomposition per interacting residues
+    11.1 Open and check
+      	 - exe-post-process-mmpbsa-decomp-per-pair-prot-dna-1.x
+	 - exe-post-process-mmpbsa-decomp-per-pair-prot-dna-2.x
+	 - exe-post-process-mmpbsa-decomp-per-pair-prot-dna-3.x
+	 - exe-post-process-mmpbsa-decomp-per-pair-prot-dna-4.x
+	   + let count=1
+	   + let last=64
+	   + let n=256
+	   + in=FINAL_DECOMP_MMPBSA_per_pair.dat
+	   + start=1161
+	   + lines=5192
+         - create-selected-pairs.f
+	 - select-pairs.f
+           + nothing should be changed
+    11.2 Run the script
+         - nohup ./exe-post-process-mmpbsa-decomp-per-pair-prot-dna-1.x >& exe-post-process-mmpbsa-decomp-per-pair-prot-dna-1.log &
+	 - nohup ./exe-post-process-mmpbsa-decomp-per-pair-prot-dna-2.x >& exe-post-process-mmpbsa-decomp-per-pair-prot-dna-2.log &
+	 - nohup ./exe-post-process-mmpbsa-decomp-per-pair-prot-dna-3.x >& exe-post-process-mmpbsa-decomp-per-pair-prot-dna-3.log &
+	 - nohup ./exe-post-process-mmpbsa-decomp-per-pair-prot-dna-4.x >& exe-post-process-mmpbsa-decomp-per-pair-prot-dna-4.log &
+
+12. Calculating the decomposition per interacting residues MMGBSA
+    12.1 Open and check
+         - exe-run-mmgbsa-decomp-per-pair-1.x
+	 - exe-run-mmgbsa-decomp-per-pair-2.x
+	 - exe-run-mmgbsa-decomp-per-pair-3.x
+	 - exe-run-mmgbsa-decomp-per-pair-4.x
+	   + let count=1
+	   + let last=64
+	   + let n=256
+	   + cpu=2
+    12.2 Run the script
+    	 - nohup ./exe-run-mmgbsa-decomp-per-pair-1.x >& exe-run-mmgbsa-decomp-per-pair-1.log &
+	 - nohup ./exe-run-mmgbsa-decomp-per-pair-2.x >& exe-run-mmgbsa-decomp-per-pair-2.log &
+	 - nohup ./exe-run-mmgbsa-decomp-per-pair-3.x >& exe-run-mmgbsa-decomp-per-pair-3.log &
+	 - nohup ./exe-run-mmgbsa-decomp-per-pair-4.x >& exe-run-mmgbsa-decomp-per-pair-4.log &
+
+13. Post-processing MMGBSA decomposition per interacting residues
+    13.1 Open and check
+         - exe-post-process-mmgbsa-decomp-per-pair-prot-dna-1.x
+	 - exe-post-process-mmgbsa-decomp-per-pair-prot-dna-2.x
+	 - exe-post-process-mmgbsa-decomp-per-pair-prot-dna-3.x
+	 - exe-post-process-mmgbsa-decomp-per-pair-prot-dna-4.x
+	   + let count=1
+	   + let last=64
+	   + let n=256
+	   + in=FINAL_DECOMP_MMGBSA_per_pair.dat
+	   + start=1161
+	   + lines=5192
+	 - create-selected-pairs.f
+	 - select-pairs.f
+	   + nothing should be changed
+    13.2 Run the script
+    	 - nohup ./exe-post-process-mmgbsa-decomp-per-pair-prot-dna-1.x >& exe-post-process-mmgbsa-decomp-per-pair-prot-dna-1.log &
+	 - nohup ./exe-post-process-mmgbsa-decomp-per-pair-prot-dna-2.x >& exe-post-process-mmgbsa-decomp-per-pair-prot-dna-2.log &
+	 - nohup ./exe-post-process-mmgbsa-decomp-per-pair-prot-dna-3.x >& exe-post-process-mmgbsa-decomp-per-pair-prot-dna-3.log &
+	 - nohup ./exe-post-process-mmgbsa-decomp-per-pair-prot-dna-4.x >& exe-post-process-mmgbsa-decomp-per-pair-prot-dna-4.log &
+
+
